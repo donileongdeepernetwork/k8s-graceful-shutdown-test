@@ -1,6 +1,7 @@
-.PHONY: build run-server run-client clean
+.PHONY: build run-server run-client clean k8s-apply k8s-delete k8s-logs-server k8s-logs-client k8s-restart
 
 IMAGE_NAME := ghcr.io/donileongdeepernetwork/k8s-graceful-shutdown-test
+NAMESPACE := k8s-graceful-shutdown-test
 
 # Build the Docker image locally
 build:
@@ -13,6 +14,26 @@ run-server:
 # Run the client in Docker (assuming server is running)
 run-client:
 	docker run --rm -e SERVER_URL=ws://host.docker.internal:8080/ws $(IMAGE_NAME) /app/client
+
+# Apply Kubernetes resources using Kustomize
+k8s-apply:
+	kubectl apply -k k8s/
+
+# Delete Kubernetes resources using Kustomize
+k8s-delete:
+	kubectl delete -k k8s/
+
+# Restart deployments to pull latest images
+k8s-restart:
+	kubectl rollout restart deployment/server-deployment deployment/client-deployment -n $(NAMESPACE)
+
+# View server logs
+k8s-logs-server:
+	kubectl logs -n $(NAMESPACE) -l app=server --tail=100 -f --prefix
+
+# View client logs
+k8s-logs-client:
+	kubectl logs -n $(NAMESPACE) -l app=client --tail=100 -f --prefix
 
 # Clean up Docker images
 clean:

@@ -35,6 +35,8 @@ func handleConnections(w http.ResponseWriter, r *http.Request) {
 	}
 	defer conn.Close()
 
+	log.Printf("Client connected: %s", conn.RemoteAddr().String())
+
 	client := &Client{conn: conn, send: make(chan []byte, 256)}
 	clientsMutex.Lock()
 	clients[client] = true
@@ -80,6 +82,7 @@ func (c *Client) writePump() {
 
 func (c *Client) readPump() {
 	defer func() {
+		log.Printf("Client disconnected: %s", c.conn.RemoteAddr().String())
 		clientsMutex.Lock()
 		delete(clients, c)
 		clientsMutex.Unlock()

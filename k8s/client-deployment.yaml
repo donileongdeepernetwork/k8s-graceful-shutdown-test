@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: client-deployment
+  namespace: k8s-graceful-shutdown-test
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: client
+  template:
+    metadata:
+      labels:
+        app: client
+    spec:
+      containers:
+      - name: client
+        image: ghcr.io/donileongdeepernetwork/k8s-graceful-shutdown-test:latest
+        imagePullPolicy: Always
+        env:
+        - name: SERVER_URL
+          value: "ws://server-service:8080/ws"
+        command: ["/app/client"]
