@@ -29,7 +29,7 @@ k8s-restart:
 
 # List all pods in the namespace
 k8s-list-pods:
-	kubectl get pods -n $(NAMESPACE) --no-headers -o custom-columns="NAME:.metadata.name,STATUS:.status.phase,AGE:.metadata.creationTimestamp"
+	kubectl get pods -n $(NAMESPACE)
 
 # Delete a specific pod
 k8s-delete-pod:
